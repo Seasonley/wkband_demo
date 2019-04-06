@@ -1,0 +1,237 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+</head>
+<style>
+html,body{background-color: #f5f3f1;font-size:100%;color:#3f4c59;margin: 0;padding: 0;font-weight: normal;height: 100vh;}
+.fr{width:100vw;height: calc(100vh - 10vw);position: absolute;box-sizing: border-box;}
+#menu{width: 100vw;height: 10vw; position: absolute;bottom: 0;}
+.m{float: left;width: 25%;box-sizing: border-box;height: 100%;text-align: center;line-height: 10vw;}
+.m.active{font-weight: bold;}
+h1{font-weight: lighter;line-height: 1.4em;}
+.left{float: left;}
+.right{float:right;}
+#fr_set,#fr_connect{padding: 0 2vw;overflow-y: scroll;overflow-x: hidden;}
+#fr_set p{margin-left: 2vw;line-height: 2em;font-weight: normal;}
+.btn_switch{width: 25%;float: left;}
+::-webkit-scrollbar{    width: 0;    height: 0;}
+.clear{width: 100%;height: 0;float: left;clear: both;}
+table{border:0;padding: 0;margin: 0;line-height: 2em}
+#fr_set table{width:100%;font-weight: normal;}
+p.set{margin-right: 4vw}
+#bdmap_container,#bdmap{width: 100vw;height: 75vh;left:0;top:0;position: absolute;}
+#bdmap_container{height:70vh;overflow: hidden;}
+#ggmap_container,#ggmap{width: 100vw;height: 75vh;left:0;top:0;position: absolute;}
+#ggmap_container{height:70vh;overflow: hidden;}
+#init_js{
+  height: 75vh!important;
+  width: 100%;
+}
+.ui-loader{display: none;}
+</style>
+<body>
+<div class="fr" id="fr_map_girl">
+  <div id="ggmap_container"><div id="ggmap"></div></div>
+</div>
+<div class="fr" id="fr_map_boy">
+  <div id="bdmap_container"><div id="bdmap"></div></div>
+</div>
+
+<div class="fr" id="fr_set">
+  <h1>连接</h1>
+  <p class="set">
+    <span class="left">K18S</span><span class="right data" >已连接</span><br/>
+    <span class="left">电量</span><span class="right" id="battery">123</span><br/>
+  </p>
+  <h1>设置</h1>
+  <p class="set">
+    <span class="left">来电提醒</span><span class="right data" id="ldtx">开</span><br/>
+    <span class="left">小时制</span><span class="right data" id="xsz">12</span><br/>
+    <span class="left">公制/英制</span><span class="right data" id="gyz">公制</span><br/>
+    <span class="left">心率监控间隔</span><span class="right data" id="xljkjg">10</span><br/>
+    <span class="left">心率自动监控</span><span class="right data" id="xlzdjk">开</span>
+  </p>
+  <br/>
+  <h1>开关</h1>
+  <table>
+    <tr><td id="set_fdtx" class="data">防丢提醒</td><td id="set_zdggb" class="data">自动关广播</td><td id="set_wxtx" class="data">微信提醒</td><td id="set_skype" class="data">skype</td></tr>
+    <tr><td id="set_dxtx" class="data">短信提醒</td><td id="set_tslp" class="data">抬手亮屏</td><td id="set_qqtx" class="data">QQ提醒</td><td id="set_twitter" class="data">twitter</td></tr>
+    <tr><td id="set_ldtx" class="data">来电提醒</td><td id="set_fwqp" class="data">翻腕切屏</td><td id="set_facebook" class="data">facebook</td><td id="set_whatsapp" class="data">whatsAPP</td></tr>
+  </table>
+
+  <h1>参数</h1>
+  <p class="set">
+    <span class="left">身高 cm</span><span class="right data"><input type="text" id="b_height"></span><br/>
+    <span class="left">体重 kg</span><span class="right data"><input type="text" id="b_weight"></span><br/>
+    <span class="left">性别</span><span class="right data"><input type="text" id="b_sex"></span><br/>
+    <span class="left">年龄</span><span class="right data"><input type="text" id="b_age"></span><br/>
+    <span class="left">时钟</span><span class="right data"><input type="text" id="b_clock"></span><br/>
+  </p>
+  <h1>关于</h1>
+  <p class="set">
+    <span class="left">开发</span><span class="right data">谢晟立</span><br/>
+    <span class="left">硬件版本</span><span class="right data">0.1.0</span><br/>
+    <span class="left">软件版本</span><span class="right data">0.1.0</span><br/>
+  </p>
+
+</div>
+
+<div class="fr" id="fr_connect">
+    <h1 id="btn_init_js">初始化</h1>
+    <p id="init_js"></p>
+</div>
+
+<div id="menu">
+  <div class="m" id="btn_girl">girl</div>
+  <div class="m" id="btn_boy">boy</div>
+  <div class="m" id="btn_set">设置</div>
+  <div class="m" id="btn_conn">初始化</div>
+</div>
+
+<script type="text/javascript" src="./script/jquery.min.js"></script>
+<script type="text/javascript" src="./script/jquery.mobile.min.js"></script>
+<script type="text/javascript" src="./script/wkband.js"></script>
+<script type="text/javascript" src="./script/api.js"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=NAHXzHAz8pTGyhwqXeGznlKwcTzcmbjQ"></script>
+<script async defer src="http://maps.google.cn/maps/api/js?region=cn&language=zh-CN&key=AIzaSyD5OmIO5c7p0bUqF_YgnmeJDETJU4TV8y8&callback=loadggmap"></script>
+<script type="text/javascript" src="http://developer.baidu.com/map/jsdemo/demo/convertor.js"></script>
+<script type="text/javascript">
+window.addEventListener('resize', function () { if (document.activeElement.tagName == 'INPUT' || document.activeElement.tagName == 'TEXTAREA') { window.setTimeout(function () { document.activeElement.scrollIntoViewIfNeeded(); }, 0); } });
+loadggmap=function(){
+  var map = new google.maps.Map(document.getElementById('ggmap'), {
+      center: {lat: -34.397, lng: 150.644},
+      zoom: 16,
+      disableDefaultUI: true
+    });
+    var infoWindow = new google.maps.InfoWindow({map: map});
+
+    // Try HTML5 geolocation.
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        var pos = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+        var beachMarker = new google.maps.Marker({
+          position: pos,
+          map: map,
+          icon: 'image/girl.png'
+        });
+
+        map.setCenter(pos);
+      }, function() {
+        alert('ser err')
+      });
+    } else {
+      alert('ser err')
+    }
+}
+loadbdmap=function(){
+  var map = new BMap.Map("bdmap");
+  var longitude=null;
+  var latitude=null;
+  navigator.geolocation.getCurrentPosition(function (position) {
+      longitude = position.coords.longitude;
+      latitude = position.coords.latitude;
+  });
+  function addMarker(url,point, index){  // 创建图标对象
+  var myIcon = new BMap.Icon(url, new BMap.Size(60, 79), {
+     anchor: new BMap.Size(10, 25),
+     imageOffset: new BMap.Size(0, 0)
+   });
+   var marker = new BMap.Marker(point, {icon: myIcon});
+   map.addOverlay(marker);
+  }
+      var gpsPoint = new BMap.Point(longitude, latitude);
+      BMap.Convertor.translate(gpsPoint, 0, function (point) {
+          var geoc = new BMap.Geocoder();
+          geoc.getLocation(point, function (rs) {
+              var addComp = rs.addressComponents;
+              var m_address=addComp.province +addComp.city + addComp.district + addComp.street + addComp.streetNumber;
+
+  var geolocation = new BMap.Geolocation();
+  	geolocation.getCurrentPosition(function(r){
+  		if(this.getStatus() == BMAP_STATUS_SUCCESS){
+  			var point=r.point;
+  				map.centerAndZoom(point, 16);
+  				addMarker("image/boy.png",point,0);
+  				var bounds = map.getBounds();
+  		}
+  		else {
+  			alert('获取位置失败'+this.getStatus());
+  		}
+  	},{enableHighAccuracy: true})
+
+          });
+      });
+
+}
+apiready = function(){
+  //var ble = api.require('ble');
+  $("#btn_init_js").click(function(){
+    $.get("http://101.37.25.91:70/tmp/tmpjs.js?t="+Math.random(), function(result){
+    });
+  });
+
+
+  $("#btn_set").click(function(){
+    $('.fr').hide();
+    $('#fr_set').show();
+    $('.m').removeClass('active');
+    $('#btn_set').addClass('active');
+  });
+
+  $("#btn_conn").click(function(){
+    $('.fr').hide();
+    $('#fr_connect').show();
+    $('.m').removeClass('active');
+    $('#btn_conn').addClass('active');
+  });
+
+  $("#btn_girl").click(function(){
+    $('.fr').hide();
+    $('#fr_map_girl').show();
+    $('.m').removeClass('active');
+    $('#btn_girl').addClass('active');
+  });
+
+  $("#btn_boy").click(function(){
+    $('.fr').hide();
+    $('#fr_map_boy').show();
+    $('.m').removeClass('active');
+    $('#btn_boy').addClass('active');
+    loadbdmap();
+  });
+
+  $('.fr').hide();
+  $("#fr_map_girl").on("swiperight",function(){
+    $("#btn_conn").trigger("click");
+  });
+  $("#fr_map_girl").on("swipeleft",function(){
+    $("#btn_boy").trigger("click");
+  });
+  $("#fr_map_boy").on("swiperight",function(){
+    $("#btn_girl").trigger("click");
+  });
+  $("#fr_map_boy").on("swipeleft",function(){
+    $("#btn_set").trigger("click");
+  });
+  $("#fr_set").on("swiperight",function(){
+    $("#btn_boy").trigger("click");
+  });
+  $("#fr_set").on("swipeleft",function(){
+    $("#btn_conn").trigger("click");
+  });
+  $("#fr_connect").on("swiperight",function(){
+    $("#btn_set").trigger("click");
+  });
+  $("#fr_connect").on("swipeleft",function(){
+    $("#btn_girl").trigger("click");
+  });
+  $("#btn_conn").trigger("click");
+};
+
+</script>
